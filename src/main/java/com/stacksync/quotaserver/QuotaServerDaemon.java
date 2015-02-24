@@ -34,18 +34,8 @@ public class QuotaServerDaemon implements Daemon {
         logger.info(String.format("Java version: %s", System.getProperty("java.version")));
 
         loadProperties(dc);
-
         testDatabaseConnection();
-
-        logger.info("Initializing XML RPC...");
-        try {
-            launchXmlRpc();
-            logger.info("XML RPC initialization succeded");
-        } catch (Exception e) {
-            logger.fatal("Could not initialize XMLRPC.", e);
-            System.exit(6);
-        }
-
+        launchXmlRpc();
     }
 
     @Override
@@ -122,9 +112,17 @@ public class QuotaServerDaemon implements Daemon {
         }
     }
 
-    private void launchXmlRpc() throws Exception {
-        xmlRpcServer = new XmlRpcSyncServer(Constants.XMLRPC_PORT);
-        xmlRpcServer.addHandler("XmlRpcSyncHandler", new XmlRpcSyncHandler(pool));
-        xmlRpcServer.serve_forever();
+    private void launchXmlRpc() {
+        logger.info("Initializing XML RPC...");
+
+        try {
+            xmlRpcServer = new XmlRpcSyncServer(Constants.XMLRPC_PORT);
+            xmlRpcServer.addHandler("XmlRpcSyncHandler", new XmlRpcSyncHandler(pool));
+            xmlRpcServer.serve_forever();
+            logger.info("XML RPC initialization succeded");
+        } catch (Exception e) {
+            logger.fatal("Could not initialize XMLRPC.", e);
+            System.exit(6);
+        }
     }
 }
