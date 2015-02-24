@@ -5,7 +5,7 @@ import org.apache.xmlrpc.server.XmlRpcServer;
 import org.apache.xmlrpc.server.XmlRpcServerConfigImpl;
 import org.apache.xmlrpc.webserver.WebServer;
 
-public class XmlRpcSyncServer {
+public class XmlRpcQuotaServer {
 
     private int port;
     private WebServer webServer = null;
@@ -13,7 +13,7 @@ public class XmlRpcSyncServer {
     private XmlRpcRequestHandlerFactory handler = null;
     private XmlRpcServer xmlRpcServer = null;
 
-    public XmlRpcSyncServer(int port) throws Exception {
+    public XmlRpcQuotaServer(int port) throws Exception {
         this.port = port;
         // bind
         this.webServer = new WebServer(this.port);

@@ -3,8 +3,8 @@ package com.stacksync.quotaserver;
 import com.stacksync.quotaserver.db.ConnectionPool;
 import com.stacksync.quotaserver.db.ConnectionPoolFactory;
 import com.stacksync.quotaserver.exceptions.dao.DAOConfigurationException;
-import com.stacksync.quotaserver.rpc.XmlRpcSyncHandler;
-import com.stacksync.quotaserver.rpc.XmlRpcSyncServer;
+import com.stacksync.quotaserver.rpc.XmlRpcQuotaHandler;
+import com.stacksync.quotaserver.rpc.XmlRpcQuotaServer;
 import com.stacksync.quotaserver.util.Config;
 import com.stacksync.quotaserver.util.Constants;
 import java.io.File;
@@ -21,7 +21,7 @@ public class QuotaServerDaemon implements Daemon {
 
     private static final Logger logger = Logger.getLogger(QuotaServerDaemon.class.getName());
     private ConnectionPool pool;
-    private XmlRpcSyncServer xmlRpcServer;
+    private XmlRpcQuotaServer xmlRpcServer;
 
     @Override
     public void init(DaemonContext dc) {
@@ -116,8 +116,8 @@ public class QuotaServerDaemon implements Daemon {
         logger.info("Initializing XML RPC...");
 
         try {
-            xmlRpcServer = new XmlRpcSyncServer(Constants.XMLRPC_PORT);
-            xmlRpcServer.addHandler("XmlRpcSyncHandler", new XmlRpcSyncHandler(pool));
+            xmlRpcServer = new XmlRpcQuotaServer(Constants.XMLRPC_PORT);
+            xmlRpcServer.addHandler("XmlRpcSyncHandler", new XmlRpcQuotaHandler(pool));
             xmlRpcServer.serve_forever();
             logger.info("XML RPC initialization succeded");
         } catch (Exception e) {

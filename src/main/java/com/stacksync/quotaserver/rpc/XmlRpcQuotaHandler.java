@@ -12,13 +12,13 @@ import com.stacksync.quotaserver.db.UserDAO;
 import com.stacksync.quotaserver.exceptions.dao.DAOException;
 import com.stacksync.quotaserver.util.Config;
 
-public class XmlRpcSyncHandler {
+public class XmlRpcQuotaHandler {
 
-    private static final Logger logger = Logger.getLogger(XmlRpcSyncHandler.class.getName());
+    private static final Logger logger = Logger.getLogger(XmlRpcQuotaHandler.class.getName());
     
     private UserDAO userDAO;
 
-    public XmlRpcSyncHandler(ConnectionPool pool) {
+    public XmlRpcQuotaHandler(ConnectionPool pool) {
         try {
             DAOFactory factory = new DAOFactory(Config.getDatasource());
             userDAO = factory.getUserDao(pool.getConnection());
