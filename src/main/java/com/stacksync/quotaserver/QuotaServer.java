@@ -1,10 +1,6 @@
-package com.stacksync.stacksync.quotaserver;
+package com.stacksync.quotaserver;
 
-/**
- * Hello world!
- *
- */
-public class App 
+public class QuotaServer 
 {
     public static void main( String[] args )
     {
