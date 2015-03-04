@@ -16,165 +16,190 @@ import com.stacksync.quotaserver.exceptions.dao.DAOException;
 import com.stacksync.quotaserver.exceptions.dao.NoResultReturnedDAOException;
 
 public class PostgresqlUserDAO extends PostgresqlDAO implements UserDAO {
-	private static final Logger logger = Logger.getLogger(PostgresqlUserDAO.class.getName());
 
-	public PostgresqlUserDAO(Connection connection) {
-		super(connection);
-	}
+    private static final Logger logger = Logger.getLogger(PostgresqlUserDAO.class.getName());
 
-	@Override
-	public User findById(UUID userID) throws DAOException {
-		ResultSet resultSet = null;
-		User user = null;
+    public PostgresqlUserDAO(Connection connection) {
+        super(connection);
+    }
 
-		String query = "SELECT id, name, email, swift_user, swift_account, quota_limit, quota_used " + " FROM \"user1\" WHERE id = ?::uuid";
+    @Override
+    public User findById(UUID userID) throws DAOException {
+        ResultSet resultSet = null;
+        User user = null;
 
-		try {
-			resultSet = executeQuery(query, new Object[] { userID });
+        String query = "SELECT id, name, email, swift_user, swift_account, quota_limit, quota_used " + " FROM \"user1\" WHERE id = ?::uuid";
 
-			if (resultSet.next()) {
-				user = mapUser(resultSet);
-			}
-		} catch (SQLException e) {
-			logger.error(e);
-			throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
-		}
-		
-		if (user == null){
-			throw new DAOException(DAOError.USER_NOT_FOUND);
-		}
+        try {
+            resultSet = executeQuery(query, new Object[]{userID});
 
-		return user;
-	}
-	
-	@Override
-	public User getByEmail(String email) throws DAOException {
+            if (resultSet.next()) {
+                user = mapUser(resultSet);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
+        }
 
-		ResultSet resultSet = null;
-		User user = null;
+        if (user == null) {
+            throw new DAOException(DAOError.USER_NOT_FOUND);
+        }
 
-		String query = "SELECT * " + " FROM \"user1\" WHERE email = lower(?)";
+        return user;
+    }
 
-		try {
-			resultSet = executeQuery(query, new Object[] { email });
-			
-			if (resultSet.next()) {
-				user = mapUser(resultSet);
-			}else{
-				throw new NoResultReturnedDAOException(DAOError.USER_NOT_FOUND);
-			}
-		} catch (SQLException e) {
-			throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
-		}
+    @Override
+    public User findBySwiftName(String swiftUser) throws DAOException {
+        ResultSet resultSet = null;
+        User user = null;
 
-		return user;
-	}
+        String query = "SELECT id, name, email, swift_user, swift_account, quota_limit, quota_used " + " FROM \"user1\" WHERE swift_user = ?";
 
-	@Override
-	public List<User> findAll() throws DAOException {
+        try {
+            resultSet = executeQuery(query, new Object[]{swiftUser});
 
-		ResultSet resultSet = null;
-		List<User> list = new ArrayList<User>();
+            if (resultSet.next()) {
+                user = mapUser(resultSet);
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
+        }
 
-		String query = "SELECT * FROM user1";
-		try {
-			resultSet = executeQuery(query, null);
+        if (user == null) {
+            throw new DAOException(DAOError.USER_NOT_FOUND);
+        }
 
-			while (resultSet.next()) {
-				list.add(mapUser(resultSet));
-			}
-		} catch (SQLException e) {
-			logger.error(e);
-			throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
-		}
-		return list;
-	}
+        return user;
+    }
 
-	@Override
-	public void add(User user) throws DAOException {
-		if (!user.isValid()) {
-			throw new IllegalArgumentException("User attributes not set");
-		}
+    @Override
+    public User getByEmail(String email) throws DAOException {
 
-		Object[] values = { user.getEmail(), user.getName(), user.getSwiftUser(), user.getSwiftAccount(), user.getQuotaLimit(), user.getQuotaUsed() };
+        ResultSet resultSet = null;
+        User user = null;
 
-		String query = "INSERT INTO user1 (email, name, swift_user, swift_account, quota_limit, quota_used) VALUES (?, ?, ?, ?, ?)";
+        String query = "SELECT * " + " FROM \"user1\" WHERE email = lower(?)";
 
-		try {
-			UUID userId = (UUID) executeUpdate(query, values);
-			user.setId(userId);
-		} catch (DAOException e) {
-			logger.error(e);
-			throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
-		}
-	}
+        try {
+            resultSet = executeQuery(query, new Object[]{email});
 
-	@Override
-	public void update(User user) throws DAOException {
-		if (user.getId() == null || !user.isValid()) {
-			throw new IllegalArgumentException("User attributes not set");
-		}
+            if (resultSet.next()) {
+                user = mapUser(resultSet);
+            } else {
+                throw new NoResultReturnedDAOException(DAOError.USER_NOT_FOUND);
+            }
+        } catch (SQLException e) {
+            throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
+        }
 
-		Object[] values = { user.getEmail(), user.getName(), user.getSwiftUser(), user.getSwiftAccount(), user.getQuotaLimit(), user.getQuotaUsed(), user.getId() };
+        return user;
+    }
 
-		String query = "UPDATE user1 SET email = ?, name = ?, swift_user = ?, swift_account = ?, quota_limit = ?, quota_used = ? WHERE id = ?::uuid";
+    @Override
+    public List<User> findAll() throws DAOException {
 
-		try {
-			executeUpdate(query, values);
-		} catch (DAOException e) {
-			logger.error(e);
-			throw new DAOException(e);
-		}
-	}
+        ResultSet resultSet = null;
+        List<User> list = new ArrayList<User>();
 
-	@Override
-	public void delete(UUID userID) throws DAOException {
-		Object[] values = { userID };
+        String query = "SELECT * FROM user1";
+        try {
+            resultSet = executeQuery(query, null);
 
-		String query = "DELETE FROM user1 WHERE id = ?";
+            while (resultSet.next()) {
+                list.add(mapUser(resultSet));
+            }
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
+        }
+        return list;
+    }
 
-		executeUpdate(query, values);
-	}
+    @Override
+    public void add(User user) throws DAOException {
+        if (!user.isValid()) {
+            throw new IllegalArgumentException("User attributes not set");
+        }
 
-	private User mapUser(ResultSet resultSet) throws SQLException {
-		User user = new User();
-		user.setId(UUID.fromString(resultSet.getString("id")));
-		user.setEmail(resultSet.getString("email"));
-		user.setName(resultSet.getString("name"));
-		user.setSwiftUser(resultSet.getString("swift_user"));
-		user.setSwiftAccount(resultSet.getString("swift_account"));
-		user.setQuotaLimit(resultSet.getInt("quota_limit"));
-		user.setQuotaUsed(resultSet.getInt("quota_used"));
-		return user;
-	}
+        Object[] values = {user.getEmail(), user.getName(), user.getSwiftUser(), user.getSwiftAccount(), user.getQuotaLimit(), user.getQuotaUsed()};
 
-	@Override
-	public List<User> findByItemId(Long itemId) throws DAOException {
-		ArrayList<User> users = new ArrayList<User>();
-		Object[] values = { itemId };
+        String query = "INSERT INTO user1 (email, name, swift_user, swift_account, quota_limit, quota_used) VALUES (?, ?, ?, ?, ?)";
 
-		String query = "SELECT u.* " 
-				+ " FROM item i " 
-				+ " INNER JOIN workspace_user wu ON i.workspace_id = wu.workspace_id "
-				+ " INNER JOIN user1 u ON wu.user_id = u.id " 
-				+ " WHERE i.id = ?";
+        try {
+            UUID userId = (UUID) executeUpdate(query, values);
+            user.setId(userId);
+        } catch (DAOException e) {
+            logger.error(e);
+            throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
+        }
+    }
 
-		ResultSet result = null;
+    @Override
+    public void update(User user) throws DAOException {
+        if (user.getId() == null || !user.isValid()) {
+            throw new IllegalArgumentException("User attributes not set");
+        }
 
-		try {
-			result = executeQuery(query, values);
+        Object[] values = {user.getEmail(), user.getName(), user.getSwiftUser(), user.getSwiftAccount(), user.getQuotaLimit(), user.getQuotaUsed(), user.getId()};
 
-			while (result.next()) {
-				User user = mapUser(result);
-				users.add(user);
-			}
+        String query = "UPDATE user1 SET email = ?, name = ?, swift_user = ?, swift_account = ?, quota_limit = ?, quota_used = ? WHERE id = ?::uuid";
 
-		} catch (SQLException e) {
-			logger.error(e);
-			throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
-		}
+        try {
+            executeUpdate(query, values);
+        } catch (DAOException e) {
+            logger.error(e);
+            throw new DAOException(e);
+        }
+    }
 
-		return users;
-	}
+    @Override
+    public void delete(UUID userID) throws DAOException {
+        Object[] values = {userID};
 
+        String query = "DELETE FROM user1 WHERE id = ?";
+
+        executeUpdate(query, values);
+    }
+
+    private User mapUser(ResultSet resultSet) throws SQLException {
+        User user = new User();
+        user.setId(UUID.fromString(resultSet.getString("id")));
+        user.setEmail(resultSet.getString("email"));
+        user.setName(resultSet.getString("name"));
+        user.setSwiftUser(resultSet.getString("swift_user"));
+        user.setSwiftAccount(resultSet.getString("swift_account"));
+        user.setQuotaLimit(resultSet.getInt("quota_limit"));
+        user.setQuotaUsed(resultSet.getInt("quota_used"));
+        return user;
+    }
+
+    @Override
+    public List<User> findByItemId(Long itemId) throws DAOException {
+        ArrayList<User> users = new ArrayList<User>();
+        Object[] values = {itemId};
+
+        String query = "SELECT u.* "
+                + " FROM item i "
+                + " INNER JOIN workspace_user wu ON i.workspace_id = wu.workspace_id "
+                + " INNER JOIN user1 u ON wu.user_id = u.id "
+                + " WHERE i.id = ?";
+
+        ResultSet result = null;
+
+        try {
+            result = executeQuery(query, values);
+
+            while (result.next()) {
+                User user = mapUser(result);
+                users.add(user);
+            }
+
+        } catch (SQLException e) {
+            logger.error(e);
+            throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
+        }
+
+        return users;
+    }
 }

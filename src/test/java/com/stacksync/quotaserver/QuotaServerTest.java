@@ -4,18 +4,8 @@ import com.stacksync.quotaserver.db.ConnectionPool;
 import com.stacksync.quotaserver.db.ConnectionPoolFactory;
 import com.stacksync.quotaserver.rpc.XmlRpcQuotaHandler;
 import com.stacksync.quotaserver.util.Config;
-import com.stacksync.quotaserver.util.Constants;
 import java.io.File;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import org.apache.commons.daemon.DaemonContext;
-import org.apache.commons.daemon.DaemonController;
 import org.apache.log4j.Logger;
-import org.apache.xmlrpc.XmlRpcException;
-import org.apache.xmlrpc.client.XmlRpcClient;
-import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
-import org.apache.xmlrpc.client.XmlRpcCommonsTransportFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,39 +20,6 @@ public class QuotaServerTest {
 
     @BeforeClass
     public static void SetUpClass() throws Exception {
-
-        /*daemon = new QuotaServerDaemon();
-         try {
-         DaemonContext dc = new DaemonContext() {
-         @Override
-         public DaemonController getController() {
-         return null;
-         }
-
-         @Override
-         public String[] getArguments() {
-         return new String[]{"/home/cotes/NetBeansProjects/stacksync-quota-server/config.properties"};
-         }
-         };
-
-         daemon.init(dc);
-         daemon.start();
-         } catch (Exception e) {
-         throw e;
-         }
-
-         XmlRpcClientConfigImpl config = new XmlRpcClientConfigImpl();
-         config.setServerURL(new URL("http://127.0.0.1:"+ Constants.XMLRPC_PORT+ "/xmlrpc")); //);// 
-         config.setEnabledForExtensions(true);
-         config.setConnectionTimeout(60 * 1000);
-         config.setReplyTimeout(60 * 1000);
-
-         server = new XmlRpcClient();
-
-         // use Commons HttpClient as transport
-         server.setTransportFactory(new XmlRpcCommonsTransportFactory(server));
-         // set configuration
-         server.setConfig(config);*/
 
         String configPath = "/home/cotes/NetBeansProjects/stacksync-quota-server/config.properties";
 

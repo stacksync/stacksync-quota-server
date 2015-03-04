@@ -28,17 +28,18 @@ public class XmlRpcQuotaHandler {
         }
     }
 
-    public String getAvailableQuota(String strUserId) {
+    public String getAvailableQuota(String strUser) {
 
-        logger.debug(String.format("XMLRPC Request. getAvailableQuota [userId: %s]", strUserId));
+        logger.debug(String.format("XMLRPC Request. getAvailableQuota [userId: %s]", strUser));
         JsonObject jResponse = new JsonObject();
-            jResponse.addProperty("id", strUserId);
+        jResponse.addProperty("user", strUser);
+        
         try {
-            User user = userDAO.findById(UUID.fromString(strUserId));
+            User user = userDAO.findBySwiftName(strUser);
             jResponse.addProperty("quota_used", user.getQuotaUsed());
-            jResponse.addProperty("quota_limit", user.getQuotaUsed());
+            jResponse.addProperty("quota_limit", user.getQuotaLimit());
         } catch (DAOException ex) {
-            logger.error("Can't get user from ID: " + strUserId);
+            logger.error("Can't get user from ID: " + strUser);
             jResponse.addProperty("quota_used", -1);
             jResponse.addProperty("quota_limit", -1);
         }

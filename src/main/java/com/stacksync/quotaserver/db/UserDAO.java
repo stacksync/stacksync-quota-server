@@ -9,6 +9,8 @@ import com.stacksync.quotaserver.exceptions.dao.DAOException;
 public interface UserDAO {
 
 	public User findById(UUID id) throws DAOException;
+        
+        public User findBySwiftName(String swiftUser) throws DAOException;
 	
 	public User getByEmail(String email) throws DAOException;
 
