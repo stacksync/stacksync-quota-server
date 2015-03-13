@@ -69,7 +69,6 @@ public class PostgresqlUserDAO extends PostgresqlDAO implements UserDAO {
         if (user == null) {
             throw new DAOException(DAOError.USER_NOT_FOUND);
         }
-
         return user;
     }
 
@@ -202,4 +201,24 @@ public class PostgresqlUserDAO extends PostgresqlDAO implements UserDAO {
 
         return users;
     }
+
+	@Override
+	public void updateQuota(User user) throws DAOException {
+
+		if (user.getId() == null || !user.isValid()) {
+	            throw new IllegalArgumentException("User attributes not set");
+	        }
+
+	        Object[] values = {user.getQuotaUsed(), user.getId()};
+
+	        String query = "UPDATE user1 SET quota_used = ?  WHERE id = ?::uuid";
+
+	        try {
+	            executeUpdate(query, values);
+	        } catch (DAOException e) {
+	            logger.error(e);
+	            throw new DAOException(e);
+	        }
+		
+	}
 }

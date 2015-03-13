@@ -19,7 +19,7 @@ public class ServerTest {
 
                 @Override
                 public String[] getArguments() {
-                    return new String[]{"/home/cotes/NetBeansProjects/stacksync-quota-server/config.properties"};
+                    return new String[]{"/home/edgar/Documents/stackSync/stacksync-quota-server/config.properties"};
                 }
             };
 

@@ -117,7 +117,7 @@ public class QuotaServerDaemon implements Daemon {
 
         try {
             xmlRpcServer = new XmlRpcQuotaServer(Constants.XMLRPC_PORT);
-            xmlRpcServer.addHandler("XmlRpcSyncHandler", new XmlRpcQuotaHandler(pool));
+            xmlRpcServer.addHandler("XmlRpcQuotaHandler", new XmlRpcQuotaHandler(pool));
             xmlRpcServer.serve_forever();
             logger.info("XML RPC initialization succeded");
         } catch (Exception e) {

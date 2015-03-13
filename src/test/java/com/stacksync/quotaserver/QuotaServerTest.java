@@ -21,7 +21,7 @@ public class QuotaServerTest {
     @BeforeClass
     public static void SetUpClass() throws Exception {
 
-        String configPath = "/home/cotes/NetBeansProjects/stacksync-quota-server/config.properties";
+        String configPath = "/home/edgar/Documents/stackSync/stacksync-quota-server/config.properties";
 
         File file = new File(configPath);
         if (!file.exists()) {
@@ -42,6 +42,6 @@ public class QuotaServerTest {
 
     @Test
     public void getQuota() {
-        handler.getAvailableQuota("4b943500-d49b-4ad4-b489-11cb0e2716e3");
+        handler.getAvailableQuota("edgar");
     }
 }

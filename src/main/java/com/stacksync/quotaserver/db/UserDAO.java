@@ -10,7 +10,7 @@ public interface UserDAO {
 
 	public User findById(UUID id) throws DAOException;
         
-        public User findBySwiftName(String swiftUser) throws DAOException;
+    public User findBySwiftName(String swiftUser) throws DAOException;
 	
 	public User getByEmail(String email) throws DAOException;
 
@@ -22,5 +22,7 @@ public interface UserDAO {
 
 	public void update(User user) throws DAOException;
 
+	public void updateQuota(User user)throws DAOException;
+	
 	public void delete(UUID id) throws DAOException;
 }

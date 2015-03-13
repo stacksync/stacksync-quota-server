@@ -1,6 +1,7 @@
 package com.stacksync.quotaserver.rpc;
 
 import com.google.gson.JsonObject;
+
 import java.util.UUID;
 
 import org.apache.log4j.Logger;
@@ -47,6 +48,33 @@ public class XmlRpcQuotaHandler {
         logger.debug(String.format("XMLRPC Response. %s", jResponse.toString()));
 
         return jResponse.toString();
+    }
+    
+    public String updateAvailableQuota(String strUser, String strNewQuota){
+        logger.debug(String.format("XMLRPC Request. getAvailableQuota [user: %s, newQuota: %s]", strUser, strNewQuota));
+
+		Integer newQuota = null;
+		User user = null;
+        JsonObject jResponse = new JsonObject();
+
+		try {
+			newQuota = Integer.parseInt(strNewQuota);
+		} catch (NumberFormatException ex) {
+			logger.error("Can't parse the new quota value: " + strNewQuota);
+		}
+		
+    	 try {
+             user = userDAO.findBySwiftName(strUser);
+             user.setQuotaUsed(newQuota);
+             userDAO.updateQuota(user);
+         } catch (DAOException ex) {
+             logger.error("Can't get user from ID: " + strUser);
+         }
+    	 jResponse.addProperty("ok", 1);
+         logger.debug(String.format("XMLRPC Response. %s", jResponse.toString()));
+
+    	 
+    	 return jResponse.toString();
     }
 
 }

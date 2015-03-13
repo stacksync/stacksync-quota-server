@@ -74,5 +74,5 @@ public class Constants {
 	public static final String DEFAULT_SWIFT_PASSWORD = "secrete";
 	
 	/* XMLRPC */
-	public static final Integer XMLRPC_PORT = 61234;
+	public static final Integer XMLRPC_PORT = 62345;
 }
