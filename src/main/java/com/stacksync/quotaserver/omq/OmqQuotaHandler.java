@@ -39,7 +39,8 @@ public class OmqQuotaHandler extends RemoteObject implements IOmqQuotaHandler{
         
         try {
             User user = userDAO.findBySwiftName(strUser);
-            jResponse.addProperty("quota_used", user.getQuotaUsed());
+            jResponse.addProperty("quota_used", user.getQuotaUsedReal());
+            
             jResponse.addProperty("quota_limit", user.getQuotaLimit());
         } catch (DAOException ex) {
             logger.error("Can't get user from ID: " + strUser);
