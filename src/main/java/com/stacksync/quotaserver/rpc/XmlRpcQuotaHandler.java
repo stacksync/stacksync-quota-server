@@ -7,9 +7,11 @@ import java.util.UUID;
 import org.apache.log4j.Logger;
 
 import com.stacksync.commons.models.User;
+import com.stacksync.commons.models.Workspace;
 import com.stacksync.quotaserver.db.ConnectionPool;
 import com.stacksync.quotaserver.db.DAOFactory;
 import com.stacksync.quotaserver.db.UserDAO;
+import com.stacksync.quotaserver.db.WorkspaceDAO;
 import com.stacksync.quotaserver.exceptions.dao.DAOException;
 import com.stacksync.quotaserver.util.Config;
 
@@ -18,6 +20,7 @@ public class XmlRpcQuotaHandler {
     private static final Logger logger = Logger.getLogger(XmlRpcQuotaHandler.class.getName());
     
     private UserDAO userDAO;
+    private WorkspaceDAO workspaceDAO;
 
     public XmlRpcQuotaHandler(ConnectionPool pool) {
         try {
@@ -29,18 +32,19 @@ public class XmlRpcQuotaHandler {
         }
     }
 
-    public String getAvailableQuota(String strUser) {
+    public String getAvailableQuota(String strSwiftContainer) {
 
-        logger.debug(String.format("XMLRPC Request. getAvailableQuota [userId: %s]", strUser));
+        logger.debug(String.format("XMLRPC Request. getAvailableQuota [containerdId: %s]", strSwiftContainer));
         JsonObject jResponse = new JsonObject();
-        jResponse.addProperty("user", strUser);
+        
         
         try {
-            User user = userDAO.findBySwiftName(strUser);
+        	User user = workspaceDAO.getOwnerBySwiftContainer(strSwiftContainer);
             jResponse.addProperty("quota_used", user.getQuotaUsedReal());
             jResponse.addProperty("quota_limit", user.getQuotaLimit());
+            jResponse.addProperty("user", user.getSwiftUser());
         } catch (DAOException ex) {
-            logger.error("Can't get user from ID: " + strUser);
+            logger.error("Can't get user from swiftContainer: " + strSwiftContainer);
             jResponse.addProperty("quota_used", -1);
             jResponse.addProperty("quota_limit", -1);
         }
