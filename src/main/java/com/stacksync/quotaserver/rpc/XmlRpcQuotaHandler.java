@@ -26,6 +26,7 @@ public class XmlRpcQuotaHandler {
         try {
             DAOFactory factory = new DAOFactory(Config.getDatasource());
             userDAO = factory.getUserDao(pool.getConnection());
+            workspaceDAO = factory.getWorkspaceDao(pool.getConnection());
             logger.info("XMLRPC server set up done.");
         } catch (Exception e) {
             logger.error("XMLRPC server could not initiliaze.");

@@ -3,6 +3,7 @@ package com.stacksync.quotaserver.db;
 import java.sql.Connection;
 
 import com.stacksync.quotaserver.db.postgresql.PostgresqlUserDAO;
+import com.stacksync.quotaserver.db.postgresql.PostgresqlWorkspaceDAO;
 
 public class DAOFactory {
 
@@ -14,6 +15,10 @@ public class DAOFactory {
 
 	public UserDAO getUserDao(Connection connection) {
 		return new PostgresqlUserDAO(connection);
+	}
+	
+	public WorkspaceDAO getWorkspaceDao(Connection connection){
+		return new PostgresqlWorkspaceDAO(connection);
 	}
 
 	public String getType() {
