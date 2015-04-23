@@ -13,12 +13,12 @@ import com.stacksync.quotaserver.db.DAOFactory;
 import com.stacksync.quotaserver.db.UserDAO;
 import com.stacksync.quotaserver.db.WorkspaceDAO;
 import com.stacksync.quotaserver.exceptions.dao.DAOException;
+import com.stacksync.quotaserver.exceptions.dao.NoResultReturnedDAOException;
 import com.stacksync.quotaserver.util.Config;
 
 public class XmlRpcQuotaHandler {
 
     private static final Logger logger = Logger.getLogger(XmlRpcQuotaHandler.class.getName());
-    
     private UserDAO userDAO;
     private WorkspaceDAO workspaceDAO;
 
@@ -37,15 +37,22 @@ public class XmlRpcQuotaHandler {
 
         logger.debug(String.format("XMLRPC Request. getAvailableQuota [containerdId: %s]", strSwiftContainer));
         JsonObject jResponse = new JsonObject();
-        
-        
+
         try {
-        	User user = workspaceDAO.getOwnerBySwiftContainer(strSwiftContainer);
+            User user = workspaceDAO.getOwnerBySwiftContainer(strSwiftContainer);
             jResponse.addProperty("quota_used", user.getQuotaUsedReal());
             jResponse.addProperty("quota_limit", user.getQuotaLimit());
             jResponse.addProperty("user", user.getSwiftUser());
+            
+        } catch (NoResultReturnedDAOException ex) {
+            logger.error("User not found: " + ex);
+            jResponse.addProperty("error", 404);
+            jResponse.addProperty("description", "User not found");
         } catch (DAOException ex) {
             logger.error("Can't get user from swiftContainer: " + strSwiftContainer);
+            logger.error(ex.toString());
+            jResponse.addProperty("error", 500);
+            jResponse.addProperty("description", "DAOException");
             jResponse.addProperty("quota_used", -1);
             jResponse.addProperty("quota_limit", -1);
         }
@@ -54,32 +61,31 @@ public class XmlRpcQuotaHandler {
 
         return jResponse.toString();
     }
-    
-    public String updateAvailableQuota(String strUser, String strNewQuota){
+
+    public String updateAvailableQuota(String strUser, String strNewQuota) {
         logger.debug(String.format("XMLRPC Request. getAvailableQuota [user: %s, newQuota: %s]", strUser, strNewQuota));
 
-		Long newQuota = null;
-		User user = null;
+        Long newQuota = null;
+        User user = null;
         JsonObject jResponse = new JsonObject();
 
-		try {
-			newQuota = Long.parseLong(strNewQuota);
-		} catch (NumberFormatException ex) {
-			logger.error("Can't parse the new quota value: " + strNewQuota);
-		}
-		
-    	 try {
-             user = userDAO.findBySwiftName(strUser);
-             user.setQuotaUsedReal(newQuota);
-             userDAO.updateQuota(user);
-         } catch (DAOException ex) {
-             logger.error("Can't get user from ID: " + strUser);
-         }
-    	 jResponse.addProperty("ok", 1);
-         logger.debug(String.format("XMLRPC Response. %s", jResponse.toString()));
+        try {
+            newQuota = Long.parseLong(strNewQuota);
+        } catch (NumberFormatException ex) {
+            logger.error("Can't parse the new quota value: " + strNewQuota);
+        }
 
-    	 
-    	 return jResponse.toString();
+        try {
+            user = userDAO.findBySwiftName(strUser);
+            user.setQuotaUsedReal(newQuota);
+            userDAO.updateQuota(user);
+        } catch (DAOException ex) {
+            logger.error("Can't get user from ID: " + strUser);
+        }
+        jResponse.addProperty("ok", 1);
+        logger.debug(String.format("XMLRPC Response. %s", jResponse.toString()));
+
+
+        return jResponse.toString();
     }
-
 }

@@ -11,6 +11,7 @@ import com.stacksync.commons.models.User;
 import com.stacksync.quotaserver.db.WorkspaceDAO;
 import com.stacksync.quotaserver.exceptions.dao.DAOException;
 import com.stacksync.quotaserver.db.DAOError;
+import com.stacksync.quotaserver.exceptions.dao.NoResultReturnedDAOException;
 
 public class PostgresqlWorkspaceDAO extends PostgresqlDAO implements WorkspaceDAO {
 
@@ -21,7 +22,7 @@ public class PostgresqlWorkspaceDAO extends PostgresqlDAO implements WorkspaceDA
 	}
 		
 	@Override
-	public User getOwnerBySwiftContainer(String swiftContainer) throws DAOException {
+	public User getOwnerBySwiftContainer(String swiftContainer) throws NoResultReturnedDAOException, DAOException {
 		ResultSet resultSet = null;
 		User user = null;
 		
@@ -31,6 +32,10 @@ public class PostgresqlWorkspaceDAO extends PostgresqlDAO implements WorkspaceDA
 			if (resultSet.next()) {
 				user = mapUser(resultSet);
 			}
+                        
+                        if (user == null) {
+                            throw new NoResultReturnedDAOException(DAOError.USER_NOT_FOUND);
+                        }
 		}catch(SQLException e){
 			logger.error(e);
 			throw new DAOException(DAOError.INTERNAL_SERVER_ERROR);
